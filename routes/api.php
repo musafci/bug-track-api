@@ -3,6 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+
+Route::namespace('Api\V1')->group(function () {
+    Route::group(['middleware' => 'ApiTokenAuthentication'], function () {
+        Route::group(['middleware' => 'auth:sanctum'], function () {
+            Route::get('user', 'UserController@index');
+        });
+    });
+});

@@ -81,4 +81,8 @@ return [
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ],
 
+    'token_name' => env('API_TOKEN_NAME', 'BugTrackApi'),
+    'api_auth_key' => env('API_AUTH_KEY', 'X-BugTrackApi'),
+    'api_auth_secret_key' => env('API_AUTH_SECRET_KEY', '@bug#track$api@'),
+
 ];
