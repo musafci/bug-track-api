@@ -1,15 +1,66 @@
 # 🐛 Bug Track API
 
-A lightweight, RESTful API built with Laravel for managing and tracking software bugs, issues, and feature requests. This project is designed for teams and individuals who need a clean, backend-focused solution for bug tracking and reporting.
+A modern bug tracking API built with Laravel 12, featuring a robust dual-layer authentication system.
+
+## 🔐 Authentication System
+
+This API uses a **dual-layer authentication approach**:
+
+1. **API Key Authentication** (JWT-based) - For service-to-service communication
+2. **User Authentication** (Laravel Sanctum) - For user-specific operations
+
+### Quick Start
+
+1. **Generate API Token:**
+```bash
+php artisan api:generate-token
+```
+
+2. **Register a User:**
+```bash
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -H "X-BugTrackApi: your-jwt-token" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+```
+
+3. **Login:**
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -H "X-BugTrackApi: your-jwt-token" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }'
+```
+
+4. **Access Protected Endpoints:**
+```bash
+curl -X GET http://localhost:8000/api/me \
+  -H "X-BugTrackApi: your-jwt-token" \
+  -H "Authorization: Bearer user-access-token"
+```
+
+📖 **Full Authentication Guide**: See [docs/AUTHENTICATION.md](docs/AUTHENTICATION.md)
 
 ## 🚀 Features
 
-- User authentication with Laravel Sanctum
+- **Dual Authentication**: API keys + user tokens
+- **JWT-based API Keys**: Secure service-to-service communication
+- **Laravel Sanctum**: Modern token-based user authentication
+- **Role-based Authorization**: Flexible permission system
+- **Rate Limiting**: Built-in protection against abuse
+- **Comprehensive Logging**: Security event tracking
 - Create, update, and manage bug reports
 - Assign bugs to users or teams
 - Set priorities, statuses, and categories
 - Comment system for bugs (discussions)
-- Role-based access control (Admin, Developer, QA, etc.)
 - API resource formatting and validation
 - RESTful JSON API responses
 
@@ -62,30 +113,36 @@ php artisan migrate
 php artisan serve
 ```
 
-## 🔐 Authentication
+## 🔧 Configuration
 
-The API uses **Laravel Sanctum** for token-based authentication. To access protected routes:
+### Environment Variables
+```env
+# API Key Configuration
+API_AUTH_KEY=X-BugTrackApi
+API_AUTH_SECRET_KEY=your-secret-key-here
 
-1. Register a user via `POST /api/register`
-2. Login via `POST /api/login`
-3. Use the returned token for subsequent requests:
-
-```http
-Authorization: Bearer YOUR_TOKEN_HERE
+# Sanctum Configuration
+SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1
+SANCTUM_TOKEN_PREFIX=
+API_TOKEN_NAME=BugTrackApi
 ```
 
 ## 📦 API Endpoints (sample)
 
-| Method | Endpoint              | Description            |
-|--------|-----------------------|------------------------|
-| POST   | /api/login            | Login user             |
-| POST   | /api/register         | Register user          |
-| GET    | /api/bugs             | List all bugs          |
-| POST   | /api/bugs             | Create new bug         |
-| GET    | /api/bugs/{id}        | Get bug detail         |
-| PUT    | /api/bugs/{id}        | Update bug             |
-| DELETE | /api/bugs/{id}        | Delete bug             |
-| POST   | /api/logout           | Logout current session |
+| Method | Endpoint              | Description            | Auth Required |
+|--------|-----------------------|------------------------|---------------|
+| POST   | /api/register         | Register new user      | API Key       |
+| POST   | /api/login            | User login            | API Key       |
+| GET    | /api/me               | Get current user       | Both          |
+| POST   | /api/logout           | Logout current session | Both          |
+| POST   | /api/logout-all       | Logout all sessions    | Both          |
+| POST   | /api/refresh          | Refresh access token   | Both          |
+| GET    | /api/user             | Get user information   | Both          |
+| GET    | /api/bugs             | List all bugs          | Both          |
+| POST   | /api/bugs             | Create new bug         | Both          |
+| GET    | /api/bugs/{id}        | Get bug detail         | Both          |
+| PUT    | /api/bugs/{id}        | Update bug             | Both          |
+| DELETE | /api/bugs/{id}        | Delete bug             | Both          |
 
 📘 Full documentation coming soon...
 
